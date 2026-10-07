@@ -1,0 +1,17 @@
+fltwin-api	fltwin.nvim.txt	/*fltwin-api*
+fltwin-configuration	fltwin.nvim.txt	/*fltwin-configuration*
+fltwin-maps	fltwin.nvim.txt	/*fltwin-maps*
+fltwin-usage	fltwin.nvim.txt	/*fltwin-usage*
+fltwin.config	fltwin.nvim.txt	/*fltwin.config*
+fltwin.float	fltwin.nvim.txt	/*fltwin.float*
+fltwin.float:buf_is_valid()	fltwin.nvim.txt	/*fltwin.float:buf_is_valid()*
+fltwin.float:hide()	fltwin.nvim.txt	/*fltwin.float:hide()*
+fltwin.float:is_current()	fltwin.nvim.txt	/*fltwin.float:is_current()*
+fltwin.float:open()	fltwin.nvim.txt	/*fltwin.float:open()*
+fltwin.float:set_config()	fltwin.nvim.txt	/*fltwin.float:set_config()*
+fltwin.float:toggle()	fltwin.nvim.txt	/*fltwin.float:toggle()*
+fltwin.float:win_is_valid()	fltwin.nvim.txt	/*fltwin.float:win_is_valid()*
+fltwin.new()	fltwin.nvim.txt	/*fltwin.new()*
+fltwin.nvim.txt	fltwin.nvim.txt	/*fltwin.nvim.txt*
+fltwin.open()	fltwin.nvim.txt	/*fltwin.open()*
+g:fltwin_config	fltwin.nvim.txt	/*g:fltwin_config*

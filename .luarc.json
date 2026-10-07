@@ -1,0 +1,22 @@
+{
+    "runtime": {
+        "version":"Lua 5.1",
+        "pathStrict": true,
+        "path": [
+            "library/?.lua",
+            "lua/?.lua",
+            "lua/?/init.lua"
+        ]
+    },
+    "workspace": {
+        "library": [
+            "${env:VIMRUNTIME}",
+            "${3rd}/busted",
+            "${3rd}/luassert",
+            "${3rd}/luv"
+        ],
+        "hint": {
+            "enable": true
+        }
+    }
+}

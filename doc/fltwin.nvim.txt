@@ -1,0 +1,260 @@
+*fltwin.nvim.txt*				       Another floating object
+
+
+			      FLTWIN REFERENCE
+
+
+A small library to open a floating window and reuse it with the specified
+buffer.
+
+				       Type |gO| to see the table of contents.
+
+
+==============================================================================
+Usage							      *fltwin-usage*
+
+Open the current buffer in a floating window.
+>vim
+  :call v:lua.require'fltwin'.open("$")
+<
+Using lua: >lua
+  local fltw = require('fltwin')
+  local float = fltw.open('$', true)
+
+  -- float has a `buf` and a `win` fields containing the buffer id and
+  -- window-ID of the floating window.
+  ..
+<
+
+==============================================================================
+Plugin Mappings							*fltwin-maps*
+
+The only mappings defined are to open/close a single floating window that
+starts with an new empty buffer.
+
+This plugin defines the following <Plug> maps:
+
+    • <Plug>(FltWinOpen)   Opens a new or previously opened window.
+    • <Plug>(FltWinHide)   Hides the floating window.
+    • <Plug>(FltWinToggle) Opens or hides the floating window.
+
+
+==============================================================================
+Configuration					      *fltwin-configuration*
+
+The configuration defines default options for floating window creation.
+
+The default configuration is shown below.
+>lua
+    vim.g.fltwin_config = {
+	-- Defines where to show the buffer name. ('title'|'footer')
+	name_pos = 'title', 
+	-- Defines the position of the buffer name. ('left'|'center'|'right')
+	name_align = 'left',
+	-- Defines default width for a new floating window. (number)
+	-- If less than 1, width is calculated relative.
+	win_width = 2 / 5,
+	-- Defines default height for a new floating window. (number)
+	-- If less than 1, height is calculated relative.
+	win_height = 2 / 7,
+	-- Defines default anchor for a new floating window.
+	-- ('NW'|'SW'|'NE'|'SE')
+	win_anchor = 'NE',
+	-- Defines default border for a new floating window. (string|string[])
+	-- Defaults to 'solid' if no 'winborder'
+	win_border = 'solid',
+	-- Defines `w:winhl` for a new floating window. (string?)
+	win_highlight = nil,
+    }
+<
+
+==============================================================================
+API								*fltwin-api*
+
+Lua module: fltwin
+
+*fltwin.float*
+
+    Fields: ~
+	• {buf}		    (`integer`) Buffer id
+	• {win}	    	    (`integer`) |window-ID|
+	• {cfg}	    	    (`vim.api.keyset.win_config`) User configuration of
+		    	    floating window. See |api-win_config|.
+	• {is_current}	    (`fun(self: fltwin.float): boolean`) See
+			    |fltwin.float:is_current()|.
+	• {buf_is_valid}    (`fun(self: fltwin.float): boolean`) See
+			    |fltwin.float:has_buffer()|.
+	• {win_is_valid}    (`fun(self: fltwin.float): boolean`) See
+			    |fltwin.float:is_valid()|.
+	• {set_config}	    (`fun(self: fltwin.float, config: vim.api.keyset.win-config)`)
+			    See |fltwin.float:set_config()|.
+	• {hide}	    (`fun(self: fltwin.float)`) See
+			    |fltwin.float:hide()|.
+	• {toggle}	    (`fun(self: fltwin.float)`) See
+			    |fltwin.float:toggle()|.
+	• {open}	    (`fun(self: fltwin.float, name: integer|string, enter:boolean, cfg: vim.api.keyset.win_config): [boolean, boolean]`)
+			    See |fltwin.float:open()|.
+
+
+float:is_current()				  *fltwin.float:is_current()*
+    Checks if the floating window is the current window.
+
+    Return: ~
+	(`boolean`): `true` if window is current, `false` otherwise. See
+		   |nvim_get_current_win()|.
+
+
+float:buf_is_valid()				*fltwin.float:buf_is_valid()*
+    Checks if the float buffer is valid.
+
+    Return: ~
+	(`boolean`): `true` if buffer is valid, `false` otherwise. See
+		   |nvim_buf_is_valid()|.
+
+
+float:win_is_valid()				*fltwin.float:win_is_valid()*
+    Checks if the float window is valid.
+
+    Return: ~
+	(`boolean`): `true` if the window is valid, `false` otherwise. See
+		   |nvim_win_is_valid()|.
+
+float:set_config({config}, {noapply})		  *fltwin.float:set_config()*
+    Sets and changes the window configuration.
+    If the window is not valid, the changes will be saved.
+
+    This function will force relative `"editor"` if none found. It also
+    accepts fractional sizes, in which case those will be calculated depending
+    on relative.
+
+    Parameters: ~
+	• {config}  (`vim.api.keyset.win-config`) Window configuration.
+	• {noapply} (`boolean?`) Set to `true` to not update the window if it
+		    is valid.
+
+    Return: ~
+	(`vim.api.keyset.win-config`) Effective (final) window configuration.
+
+
+float:hide()						*fltwin.float:hide()*
+    Hides the floating window, and if it was the current window, moves the
+    focus to the next focusable window.
+
+
+float:toggle()					      *fltwin.float:toggle()*
+    Show/hide the floating window, if it is still valid.
+
+
+float:open({name}, {enter}, {config})			*fltwin.float:open()*
+    Open a floating window.
+
+    If {name} is omitted and {buf} is not valid, a new listed scratch buffer
+    will be used.
+    If {enter} is omitted, the cursor will not be moved into the floating
+    window.
+    If {cfg} is omitted, the default configuration or last used configuration
+    will be used when opening the new floating window.
+
+    Example: >lua
+	local f = require('fltwin').new()
+	f:open("mytext.txt", true, { width = 40, height = 10 })
+<
+
+    Parameters: ~
+	• {name}    (`string|integer`) Buffer name or buffer id.
+	• {enter}   (`boolean`) `true` to move cursor to the floating window.
+	• {cfg}	    (`vim.api.keyset.win_config`) Set or change floating
+		    window configuration. 
+    
+    Overloads: ~
+	• `fun(self: float): [boolean, boolean]`
+	• `fun(self: float, name: string|integer): [boolean, boolean]`
+	• `fun(self: float, enter: boolean): [boolean, boolean]`
+	• `fun(self: float, name: string|integer, enter: boolean): [boolean, boolean]`
+	• `fun(self: float, name: string|integer, cfg: vim.api.keyset.win_config): [boolean, boolean]`
+	• `fun(self: float, enter: boolean, cfg: vim.api.keyset.win_config): [boolean, boolean]`
+
+    Return: ~
+	(`[boolean, boolean]`) 2-tuple indicating if buffer and or window id
+			     changed after call.
+
+fltwin.new({buf}, {win})				       *fltwin.new()*
+    Creates a new floating window handler.
+
+    Pass {buf} and or {win} to set the handler to be used with an existing
+    floating window.
+
+    Parameters: ~
+      • {buf}   (`integer?`) Buffer id.
+      • {win}	(`integer?`) |window-ID| of the passed {buf}.
+
+    Overloads: ~
+      • `fun(win: integer): fltwin.float`
+
+    Return: ~
+	(*fltwin.float*) See |fltwin.float|.
+
+
+fltwin.open({name}, {enter}, {cfg})			      *fltwin.open()*
+    Open a floating window with the specified parameters.
+
+    If {name} is omitted and {buf} is not valid, a new listed scratch buffer
+    will be used.
+    If {enter} is omitted, the cursor will not be moved into the floating
+    window.
+    If {cfg} is omitted, the default configuration be used when opening the 
+    floating window.
+
+    Example: >lua
+	local f = require('fltwin').open("mytext.txt", true, {
+	    width = 40,
+	    height = 10,
+	})
+<
+
+    Parameters: ~
+	• {name}    (`string|integer`) Buffer name or buffer id.
+	• {enter}   (`boolean`) `true` to move cursor to the floating window.
+	• {cfg}	    (`vim.api.keyset.win_config`) Set or change floating
+		    window configuration. 
+    
+    Overloads: ~
+	• `fun(self: float): [boolean, boolean]`
+	• `fun(self: float, name: string|integer): [boolean, boolean]`
+	• `fun(self: float, enter: boolean): [boolean, boolean]`
+	• `fun(self: float, name: string|integer, enter: boolean): [boolean, boolean]`
+	• `fun(self: float, name: string|integer, cfg: vim.api.keyset.win_config): [boolean, boolean]`
+	• `fun(self: float, enter: boolean, cfg: vim.api.keyset.win_config): [boolean, boolean]`
+
+    Return (multiple): ~
+	(`fltwin.float`)	The floating window handler. See
+				|fltwin.float|.
+	(`[boolean, boolean]`)	2-tuple indicating if buffer and or window id
+				changed after call.
+
+							   *g:fltwin_config*
+
+Stores the plugin configuration. See |fltwin.config|.
+
+
+*fltwin.config*
+
+    Fields: ~
+	• {name_pos}	    (`'title'|'footer'|nil`) Specifies the position of
+			    the buffer name in the floating window.
+	• {name_align}	    (`'left'|'center'|'right'|nil`) Specifies the
+			    alignment of the buffer name in the position
+			    specified by {name_pos}.
+	• {win_width}	    (`number?`) Specifies the window width. If value is
+			    less than one, the width is a percetage of the
+			    editor 'columns'.
+	• {win_height}	    (`number?`) Specifies the window height. If value is
+			    less than one, the height is a percetage of the
+			    editor 'lines'.
+	• {win_anchor}	    (`'NW'|'NE'|'SW'|'SE'|nil`) Specifies window anchor.
+	• {win_border}	    (`string|string[]`) Specifies window border.
+	• {win_highlight}   (`string?`) Specifies 'winhl' for the floating
+			    window.
+
+
+ vim:tw=78:isk=!-~,^*,^\|,^\":ts=8:noet:ft=help:norl:
